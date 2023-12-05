@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  uploadfiles-aot:
+    image: ${DOCKER_REGISTRY-}uploadfiles
+    build:
+      context: .
+      dockerfile: AOT/UploadFiles/Dockerfile
+
+  uploadfiles-jit:
+    image: ${DOCKER_REGISTRY-}uploadfiles
+    build:
+      context: .
+      dockerfile: JIT/UploadFiles/Dockerfile
+
+  rabbitmq-aot:
+    image: rabbitmq:3.12.9-management-alpine
+
+  rabbitmq-jit:
+    image: rabbitmq:3.12.9-management-alpine
