@@ -7,4 +7,13 @@
         Video,
         Unknown
     }
+
+    public enum FileExtension
+    {
+        DOC,
+        PDF,
+        PNG,
+        XLSX,
+        Unknown
+    }
 }

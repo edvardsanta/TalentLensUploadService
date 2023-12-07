@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using UploadFiles.Interfaces;
 using UploadFiles.Services.Utils;
-using FileTypeExt = (UploadFiles.Services.Utils.FileType, string);
+using FileTypeExt = (UploadFiles.Services.Utils.FileType type, UploadFiles.Services.Utils.FileExtension ext);
 namespace UploadFiles.Services
 {
     public class UploadManager
@@ -15,9 +15,9 @@ namespace UploadFiles.Services
 
         public async Task HandleUploadAsync(IFormFile file)
         {
-            FileTypeExt fileType = DetermineFileType(file);
+            FileTypeExt fileType = DetermineFileTypeExt(file);
 
-            var handler = _fileHandlers.FirstOrDefault(h => h.FileType == fileType.Item1);
+            IFileHandler? handler = _fileHandlers.FirstOrDefault(h => h.FileType == fileType);
 
             if (handler != null)
             {
@@ -28,7 +28,23 @@ namespace UploadFiles.Services
             }
         }
 
-        private FileTypeExt DetermineFileType(IFormFile file)
+        private FileTypeExt DetermineFileTypeExt(IFormFile file)
+        {
+            return (DetermineFileType(file), DetermineFileExtension(file));
+        }
+
+
+        private FileExtension DetermineFileExtension(IFormFile file) 
+        {
+            string extension = Path.GetExtension(file.FileName).ToUpperInvariant();
+            if (!Enum.TryParse<FileExtension>(extension, true, out FileExtension result))
+            {
+                return FileExtension.Unknown;
+            }
+            return result;
+        }
+
+        private FileType DetermineFileType(IFormFile file)
         {
             string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
@@ -37,15 +53,15 @@ namespace UploadFiles.Services
                 case ".doc":
                 case ".docx":
                 case ".pdf":
-                    return (FileType.Document, "");
+                    return FileType.Document;
 
                 case ".jpg":
                 case ".jpeg":
                 case ".png":
-                    return (FileType.Document, "");
+                    return FileType.Image;
      
                 default:
-                    return (FileType.Document, ""); 
+                    return FileType.Unknown; 
             }
         }
     }

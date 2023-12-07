@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using UploadFiles.Services.Services.Abstractions;
 using UploadFiles.Services.Utils;
+using FileTypeExt = (UploadFiles.Services.Utils.FileType, UploadFiles.Services.Utils.FileExtension);
 
 namespace UploadFiles.Services
 {
     public class PDFUpload : DocumentUpload
     {
-        public override FileType FileType { get; set; } = FileType.Document;
+        public override FileTypeExt FileType { get; set; } = (Utils.FileType.Document, FileExtension.PDF);
 
         public async override Task HandleFileAsync(IFormFile file)
         {
