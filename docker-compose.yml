@@ -13,8 +13,5 @@ services:
       context: .
       dockerfile: JIT/UploadFiles/Dockerfile
 
-  rabbitmq-aot:
-    image: rabbitmq:3.12.9-management-alpine
-
-  rabbitmq-jit:
+  rabbitmq:
     image: rabbitmq:3.12.9-management-alpine

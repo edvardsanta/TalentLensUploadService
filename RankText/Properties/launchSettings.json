@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RankText": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
