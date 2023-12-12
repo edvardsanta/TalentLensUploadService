@@ -1,11 +1,7 @@
-﻿using iTextSharp.text.pdf.parser;
-using iTextSharp.text.pdf;
+﻿using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UploadFiles.Services.Services.Abstractions;
 using UploadFiles.Services.Utils;
 using FileTypeExt = (UploadFiles.Services.Utils.FileType, UploadFiles.Services.Utils.FileExtension);
@@ -33,6 +29,5 @@ namespace UploadFiles.Services.Services
             }
             string result = text.ToString();
         }
-        
     }
 }

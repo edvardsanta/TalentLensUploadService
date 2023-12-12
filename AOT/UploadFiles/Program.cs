@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Options;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using UploadFiles;
-using UploadFiles.Interfaces;
-using UploadFiles.Services;
+using UploadFiles.Services.Interfaces;
+using UploadFiles.Services.Services;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 ImmutableList<IFileHandler> handlers = Configuration.ConfigureFileHandlers();
-
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 209715200;

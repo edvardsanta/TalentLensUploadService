@@ -6,7 +6,7 @@ using UploadFiles.Services.Services.Abstractions;
 using UploadFiles.Services.Utils;
 using FileTypeExt = (UploadFiles.Services.Utils.FileType, UploadFiles.Services.Utils.FileExtension);
 
-namespace UploadFiles.Services
+namespace UploadFiles.Services.Services
 {
     public class PDFUpload : DocumentUpload
     {

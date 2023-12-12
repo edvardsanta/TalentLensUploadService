@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
-using UploadFiles.Interfaces;
 using UploadFiles.Services;
+using UploadFiles.Services.Interfaces;
 using UploadFiles.Services.Services;
 
 namespace UploadFiles

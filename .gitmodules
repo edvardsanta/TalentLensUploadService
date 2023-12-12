@@ -1,0 +1,6 @@
+[submodule "MyML"]
+	path = MyML
+	url = https://github.com/edvardsanta/MyML.git
+[submodule "TextProcessing"]
+	path = TextProcessing
+	url = https://github.com/edvardsanta/TextProcessing.git

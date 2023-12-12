@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using UploadFiles.Services.Utils;
 using FileTypeExt = (UploadFiles.Services.Utils.FileType, UploadFiles.Services.Utils.FileExtension);
 
-namespace UploadFiles.Interfaces
+namespace UploadFiles.Services.Interfaces
 {
     public interface IFileHandler
     {

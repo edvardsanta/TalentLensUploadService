@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using UploadFiles.Interfaces;
+using UploadFiles.Services.Interfaces;
 using UploadFiles.Services.Utils;
 using FileTypeExt = (UploadFiles.Services.Utils.FileType type, UploadFiles.Services.Utils.FileExtension ext);
-namespace UploadFiles.Services
+namespace UploadFiles.Services.Services
 {
     public class UploadManager
     {
@@ -34,10 +34,10 @@ namespace UploadFiles.Services
         }
 
 
-        private FileExtension DetermineFileExtension(IFormFile file) 
+        private FileExtension DetermineFileExtension(IFormFile file)
         {
-            string extension = Path.GetExtension(file.FileName).ToUpperInvariant();
-            if (!Enum.TryParse<FileExtension>(extension, true, out FileExtension result))
+            string extension = Path.GetExtension(file.FileName).ToUpperInvariant().TrimStart('.');
+            if (!Enum.TryParse(extension, true, out FileExtension result))
             {
                 return FileExtension.Unknown;
             }
@@ -59,9 +59,9 @@ namespace UploadFiles.Services
                 case ".jpeg":
                 case ".png":
                     return FileType.Image;
-     
+
                 default:
-                    return FileType.Unknown; 
+                    return FileType.Unknown;
             }
         }
     }
