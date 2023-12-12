@@ -1,6 +1,3 @@
 [submodule "ExternalLib/MyML"]
 	path = ExternalLib/MyML
 	url = https://github.com/edvardsanta/MyML.git
-[submodule "ExternalLib/TextProcessing"]
-	path = ExternalLib/TextProcessing
-	url = https://github.com/edvardsanta/TextProcessing.git
