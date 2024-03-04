@@ -2,17 +2,18 @@
 using iTextSharp.text.pdf.parser;
 using Microsoft.AspNetCore.Http;
 using System.Text;
-using UploadFiles.Services.Services.Abstractions;
+using UploadFiles.Services.Services.Upload.Abstractions;
 using UploadFiles.Services.Utils;
+using UploadFiles.Shared.Contracts;
 using FileTypeExt = (UploadFiles.Services.Utils.FileType, UploadFiles.Services.Utils.FileExtension);
 
-namespace UploadFiles.Services.Services
+namespace UploadFiles.Services.Services.Upload
 {
-    public class XLSXUpload : DocumentUpload
+    public class PDFUpload : DocumentUpload
     {
-        public override FileTypeExt FileType { get; set; } = (Utils.FileType.Document, FileExtension.XLSX);
+        public override FileTypeExt FileType { get; set; } = (Utils.FileType.Document, FileExtension.PDF);
 
-        public async override Task HandleFileAsync(IFormFile file)
+        public async override Task<RankTextMessage> HandleFileAsync(IFormFile file)
         {
             using var stream = new MemoryStream();
             await file.CopyToAsync(stream);
@@ -28,6 +29,7 @@ namespace UploadFiles.Services.Services
                 text.Append(PdfTextExtractor.GetTextFromPage(reader, i));
             }
             string result = text.ToString();
+            return new() { extractedText = result };
         }
     }
 }
