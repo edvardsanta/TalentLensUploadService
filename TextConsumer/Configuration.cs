@@ -15,8 +15,9 @@ namespace TextConsumer
             var configuration = hostContext.Configuration;
 
             var rabbitMqUri = configuration["RabbitMq:Uri"];
-            var queueName = configuration["RabbitMq:QueueName"];
-            if (string.IsNullOrEmpty(queueName))
+            var consumeQueueName = configuration["RabbitMq:ProcessTextQueue"];
+            var targetQueueName = configuration["RabbitMq:RankTextQueue"];
+            if (string.IsNullOrEmpty(consumeQueueName))
             {
                 throw new InvalidOperationException("RabbitMQ Queue Name is not configured.");
             }
@@ -26,9 +27,9 @@ namespace TextConsumer
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(rabbitMqUri); 
+                    cfg.Host(rabbitMqUri);
 
-                    cfg.ReceiveEndpoint(queueName, e =>
+                    cfg.ReceiveEndpoint(consumeQueueName, e =>
                     {
                         e.ConfigureConsumer<TextProcessingConsumer>(context);
                     });

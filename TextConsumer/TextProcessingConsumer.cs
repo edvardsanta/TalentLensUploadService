@@ -3,14 +3,20 @@ using UploadFiles.Shared.Contracts;
 
 namespace TextConsumer
 {
-    public class TextProcessingConsumer : IConsumer<TextMessage>
+    public class TextProcessingConsumer : IConsumer<RankTextMessage>
     {
-        public async Task Consume(ConsumeContext<TextMessage> context)
+        public TextProcessingConsumer()
         {
-            var text = context.Message.Text;
+
+        }
+
+        public async Task Consume(ConsumeContext<RankTextMessage> context)
+        {
+            var text = context.Message.extractedText;
 
             var normalizedText = ProcessText(text);
 
+            //await context.Publish(new RankTextMessage(""));
             await Task.Delay(1000);
         }
 

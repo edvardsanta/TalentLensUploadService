@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using static TextConsumer.Configuration;
 
 var host = Host.CreateDefaultBuilder(args)
@@ -9,4 +8,3 @@ var host = Host.CreateDefaultBuilder(args)
                 .Build();
 
 host.Run();
-
