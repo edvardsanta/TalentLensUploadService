@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit" Version="8.1.2" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.2" />
+    <PackageReference Include="MassTransit" Version="8.2.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ExternalLib\ProcessingText\src\TextProcessing.csproj" />
     <ProjectReference Include="..\UploadFiles.Shared\UploadFiles.Shared.csproj" />
   </ItemGroup>
 
