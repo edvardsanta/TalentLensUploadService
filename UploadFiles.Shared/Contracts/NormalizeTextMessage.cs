@@ -1,9 +1,6 @@
-﻿using System.Text.Json.Serialization;
-
-namespace UploadFiles.Shared.Contracts
+﻿namespace UploadFiles.Shared.Contracts
 {
-    public class NormalizeTextMessage
+    public record NormalizeTextMessage(string OriginalText)
     {
-        public string OriginalText {  get; set; } = string.Empty;
     }
 }
