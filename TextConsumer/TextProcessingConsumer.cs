@@ -1,33 +1,35 @@
 ﻿using MassTransit;
+using Newtonsoft.Json;
+using TextProcessing;
 using UploadFiles.Shared.Contracts;
 
 namespace TextConsumer
 {
-    public class TextProcessingConsumer : IConsumer<RankTextMessage>
+    public class TextProcessingConsumer : IConsumer<NormalizeTextMessage>
     {
         public TextProcessingConsumer()
         {
 
         }
 
-        public async Task Consume(ConsumeContext<RankTextMessage> context)
+        public async Task Consume(ConsumeContext<NormalizeTextMessage> context)
         {
-            var text = context.Message.extractedText;
+            string text = context.Message.OriginalText;
 
-            var normalizedText = ProcessText(text);
+            string normalizedText = await new Processing().Process(text, "pt", true);
 
-            //await context.Publish(new RankTextMessage(""));
-            await Task.Delay(1000);
+            await context.Publish(new RankTextMessage(normalizedText));
+
+            var message = new NameIdentifierMessage { Text = normalizedText };
+
+            // TODO : REMOVE MOCK URI
+            await context.Send(new Uri("rabbitmq://rabbitmq/name_identifier_queue"), message);
+
+            Console.WriteLine("Message published: " + message.Text);
         }
-
-        private string ProcessText(string text)
+        public class NameIdentifierMessage
         {
-            return text;
-        }
-
-        private string RemoveStopWords(string text)
-        {
-            return text;
+            public string Text { get; set; }
         }
     }
 }
