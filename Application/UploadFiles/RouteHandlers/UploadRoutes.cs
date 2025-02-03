@@ -18,7 +18,6 @@ namespace UploadFiles.RouteHandlers
         [Authorize]
         private static async Task<IResult> UploadFile(HttpContext httpContext, IFormFileCollection files, UploadManager uploadManager, IAntiforgery antiforgery)
         {
-
             try
             {
                 await antiforgery.ValidateRequestAsync(httpContext);
