@@ -5,40 +5,9 @@ services:
     image: ${DOCKER_REGISTRY-}uploadfiles
     build:
       context: .
-      dockerfile: AOT/UploadFiles/Dockerfile
-    # uploadfiles-jit:
-    #   image: ${DOCKER_REGISTRY-}uploadfiles
-    #   build:
-    #     context: .
-    #     dockerfile: JIT/UploadFiles/Dockerfile
+      dockerfile: Application/UploadFiles/Dockerfile
     ports:
-        - 5000:8080
-  rabbitmq:
-    image: rabbitmq:3.12.9-management-alpine
-    container_name: rabbitmq
-    ports:
-        - 5672:5672
-        - 15672:15672
-
-  influxdb:
-       image: influxdb:2.6-alpine
-       env_file:
-         - influxv2.env
-       ports:
-         - "8086:8086"
-       volumes:
-         - influxdb_data:/var/lib/influxdb2
-       container_name: influxdb
-     
-  telegraf:
-    image: telegraf:1.25-alpine
-    depends_on:
-        - influxdb
-    volumes:
-      # Mount for telegraf config
-      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
-    env_file:
-        - influxv2.env
+      - 5000:8080
 
   textconsumer:
     image: ${DOCKER_REGISTRY-}textconsumer
@@ -52,6 +21,59 @@ services:
       context: .
       dockerfile: RankText/Dockerfile
 
-volumes:
-  influxdb_data:
+  postgres:
+    image: postgres:17.2
+    restart: on-failure
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+
+  paradedb:
+    image: paradedb/paradedb:0.15.0-pg17
+    container_name: paradedb
+    restart: on-failure
+    ports:
+      - 10000:5432
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    depends_on:
+      - postgres
+
+  rabbitmq:
+    image: rabbitmq:3.12.9-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
