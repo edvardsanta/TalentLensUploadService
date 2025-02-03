@@ -1,106 +1,88 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 using UploadFiles.Services.Interfaces;
+using UploadFiles.Services.Mapper;
 using UploadFiles.Services.Services.Upload.Models;
-using UploadFiles.Services.Utils;
 using UploadFiles.Shared.Contracts;
 using FileTypeExt = (UploadFiles.Services.Utils.FileType type, UploadFiles.Services.Utils.FileExtension ext);
 namespace UploadFiles.Services.Services.Upload
 {
     public class UploadManager
     {
-        private readonly ImmutableList<IFileHandler> _fileHandlers;
-        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IPublishEndpoint? _publishEndpoint;
+        private readonly ILogger<UploadManager> _logger;
+        private readonly FileTypeMapper _fileTypeMapper;
+        private readonly ImmutableDictionary<FileTypeExt, IFileHandler> _fileHandlers;
 
-        public UploadManager(ImmutableList<IFileHandler> fileHandlers, IPublishEndpoint? publishEndpoint = null)
+        public UploadManager(ImmutableList<IFileHandler> fileHandlers, ILogger<UploadManager> logger, IPublishEndpoint? publishEndpoint = null)
         {
-            _fileHandlers = fileHandlers;
+            _fileHandlers = fileHandlers.ToImmutableDictionary(
+                h => h.FileType,
+                h => h);
             _publishEndpoint = publishEndpoint;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _fileTypeMapper = new FileTypeMapper();
         }
 
         public async Task<FileUploadResult> HandleUploadAsync(IFormFile file)
-        {   
+        {
+            ArgumentNullException.ThrowIfNull(file);
+
             try
             {
-                FileTypeExt fileType = DetermineFileTypeExt(file);
-
-                IFileHandler? handler = _fileHandlers.FirstOrDefault(h => h.FileType == fileType);
-
-                bool fileSentToProcess = false;
-                if (handler != null)
-                {
-                    NormalizeTextMessage rankMessageToSend = await handler.HandleFileAsync(file);
-
-                    if (_publishEndpoint != null)
-                    {
-                        await _publishEndpoint.Publish(rankMessageToSend);
-                        fileSentToProcess = true;
-                    }
-                    return CreateFileUploadResult(true, fileSentToProcess, file, fileType);
-
-                }
-                return CreateFileUploadResult(false, false, file, fileType);
+                var fileType = _fileTypeMapper.DetermineFileType(file);
+                return await ProcessFileUploadAsync(file, fileType);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error processing file upload for {FileName}", file.FileName);
                 return CreateFileUploadResult(false, false, file);
-            }     
+            }
         }
 
+        private async Task<FileUploadResult> ProcessFileUploadAsync(IFormFile file, FileTypeExt fileType)
+        {
+            if (!_fileHandlers.TryGetValue(fileType, out var handler))
+            {
+                _logger.LogWarning("No handler found for file type {FileType}", fileType);
+                return CreateFileUploadResult(false, false, file, fileType);
+            }
 
-        private FileUploadResult CreateFileUploadResult(
-        bool successExtracted,
-        bool fileSentToProcess,
-        IFormFile file,
-        FileTypeExt fileType = default)
+            var message = await handler.HandleFileAsync(file);
+            await PublishMessageAsync(message);
+
+            return CreateFileUploadResult(true, true, file, fileType);
+        }
+
+        private async Task PublishMessageAsync(NormalizeTextMessage message)
+        {
+            try
+            {
+                await _publishEndpoint.Publish(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to publish message to queue");
+                throw new Exception("Failed to queue file for processing", ex);
+            }
+        }
+
+        private static FileUploadResult CreateFileUploadResult(
+            bool successExtracted,
+            bool fileSentToProcess,
+            IFormFile file,
+            FileTypeExt fileType = default)
         {
             return new FileUploadResult(
                 successExtracted,
                 fileSentToProcess,
                 file.FileName,
-                fileType.type.ToString() ?? "",
-                fileType.ext.ToString() ?? "",
+                fileType.type.ToString() ?? string.Empty,
+                fileType.ext.ToString() ?? string.Empty,
                 DateTime.UtcNow
             );
-        }
-
-
-        private FileTypeExt DetermineFileTypeExt(IFormFile file)
-        {
-            return (DetermineFileType(file), DetermineFileExtension(file));
-        }
-
-
-        private FileExtension DetermineFileExtension(IFormFile file)
-        {
-            string extension = Path.GetExtension(file.FileName).ToUpperInvariant().TrimStart('.');
-            if (!Enum.TryParse(extension, true, out FileExtension result))
-            {
-                return FileExtension.Unknown;
-            }
-            return result;
-        }
-
-        private FileType DetermineFileType(IFormFile file)
-        {
-            string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-            switch (extension)
-            {
-                case ".doc":
-                case ".docx":
-                case ".pdf":
-                    return FileType.Document;
-
-                case ".jpg":
-                case ".jpeg":
-                case ".png":
-                    return FileType.Image;
-
-                default:
-                    return FileType.Unknown;
-            }
         }
     }
 }
