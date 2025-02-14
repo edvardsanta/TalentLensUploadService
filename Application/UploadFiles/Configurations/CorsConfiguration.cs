@@ -14,7 +14,8 @@ namespace UploadFiles.Configurations
                     return isLocalhost;
                 })
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
             });
         }
     }

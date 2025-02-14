@@ -1,35 +1,13 @@
-using UploadFiles.Configurations;
-using UploadFiles.Handlers;
-using UploadFiles.Middleware;
+using UploadFiles.Extensions;
+using static UploadFiles.Configurations.ApplicationConfiguration;
 
-var builder = WebApplication.CreateSlimBuilder(args);
-
-IConfiguration config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .AddEnvironmentVariables()
-    .Build();
-
-ServicesConfiguration.ConfigureServices(builder.Services, config);
-builder.Services.AddAntiforgery(AntiforgeryConfiguration.ConfigureAntiforgery);
-ServicesConfiguration.ConfigureAuthentication(builder.Services, config);
-builder.Services.AddAuthorization();
-builder.Services.AddCors(CorsConfiguration.ConfigureCors);
+var result = await ApplicationState.Create(args).Bind(ConfigurationFunctions.ConfigureServices)
+                .Bind(ConfigurationFunctions.BuildApplication)
+                .Bind(ConfigurationFunctions.ConfigureMiddleware)
+                .BindAsync(ConfigurationFunctions.InitializeDatabase);
+var app =  result.IsSuccess
+    ? result.Value.App
+    : throw new InvalidOperationException($"Application configuration failed: {result.Error}");
 
 
-WebApplication app = builder.Build();
-
-app.UseCors("AllowSpecificOrigin"); 
-app.UseWebSockets(new WebSocketOptions
-{
-    KeepAliveInterval = TimeSpan.FromSeconds(120),
-});
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseAntiforgery();
-app.UseMiddleware<WebSocketMiddleware>();
-
-RouteConfigurator.ConfigureRoutes(app);
-
-// Run the app
-app.Run();
+await app.RunAsync();
