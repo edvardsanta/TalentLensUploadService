@@ -134,3 +134,5 @@ _NCrunch*
 
 .vs
 /TextConsumer/appsettings.json
+/RankText/appsettings.json
+/Application/UploadFiles/appsettings.json
