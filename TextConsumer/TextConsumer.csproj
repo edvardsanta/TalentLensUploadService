@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ExternalLib\ProcessingText\src\TextProcessing.csproj" />
+    <ProjectReference Include="..\Infrastructure\UploadFiles.Infrastructure\UploadFiles.Infrastructure.csproj" />
     <ProjectReference Include="..\UploadFiles.Shared\UploadFiles.Shared.csproj" />
   </ItemGroup>
 
