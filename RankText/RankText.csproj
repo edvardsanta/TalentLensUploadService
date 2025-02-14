@@ -36,6 +36,7 @@
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\ExternalLib\MyML\src\MyML.csproj" />
+	  <ProjectReference Include="..\Infrastructure\UploadFiles.Infrastructure\UploadFiles.Infrastructure.csproj" />
 	  <ProjectReference Include="..\UploadFiles.Shared\UploadFiles.Shared.csproj" />
 	</ItemGroup>
 

@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using RankText.Interfaces;
+using UploadFiles.Infrastructure.Config;
 
 
 namespace RankText
@@ -16,6 +18,8 @@ namespace RankText
 
             var rabbitMqUri = configuration["RabbitMq:Uri"];
             var queueName = configuration["RabbitMq:QueueName"];
+            var rabbitMqUser = configuration["RabbitMq:Username"];
+            var rabbitMqPass = configuration["RabbitMq:Password"];
             if (string.IsNullOrEmpty(queueName))
             {
                 throw new InvalidOperationException("RabbitMQ Queue Name is not configured.");
@@ -26,14 +30,20 @@ namespace RankText
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(rabbitMqUri);
-
+                    cfg.Host(rabbitMqUri, "/", h =>
+                    {
+                        h.Username(rabbitMqUser);
+                        h.Password(rabbitMqPass);
+                    });
                     cfg.ReceiveEndpoint(queueName, e =>
                     {
                         e.ConfigureConsumer<RankTextConsumer>(context);
                     });
                 });
             });
+
+            services.AddInfrastructureServices(configuration);
+            services.AddScoped<ITextClassificationService, TextClassificationService>();
         }
         public static void ConfigureAppConfiguration(HostBuilderContext hostContext, IConfigurationBuilder config)
         {
