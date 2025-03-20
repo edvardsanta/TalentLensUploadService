@@ -12,6 +12,10 @@ namespace RankText
 {
     class TextClassificationService : ITextClassificationService
     {
+        public record ResumeData() : ClassifierModel
+        {
+        }
+
         private readonly IFileRepository _fileRepository;
         private readonly ILogger<TextClassificationService> _logger;
         private INaiveBayesClassifier _classifier;
