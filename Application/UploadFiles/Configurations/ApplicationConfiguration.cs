@@ -25,7 +25,7 @@ namespace UploadFiles.Configurations
                 try
                 {
                     var config = new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json")
+                        .AddJsonFile("appsettings.json", optional: true)
                         .AddEnvironmentVariables()
                         .Build();
 
