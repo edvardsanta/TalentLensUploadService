@@ -32,4 +32,10 @@
     <ProjectReference Include="..\Services\UploadFiles.Services\UploadFiles.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

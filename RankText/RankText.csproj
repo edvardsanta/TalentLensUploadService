@@ -9,16 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
     <None Remove="appsettings.Sample.json" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.Sample.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 	
@@ -38,6 +34,12 @@
 	  <ProjectReference Include="..\ExternalLib\MyML\src\MyML.csproj" />
 	  <ProjectReference Include="..\Infrastructure\UploadFiles.Infrastructure\UploadFiles.Infrastructure.csproj" />
 	  <ProjectReference Include="..\UploadFiles.Shared\UploadFiles.Shared.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <None Update="appsettings.json">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>
