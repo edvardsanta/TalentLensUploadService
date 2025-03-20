@@ -23,7 +23,7 @@ namespace UploadFiles.Infrastructure.Config
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            var mongoSettings = configuration.GetSection("MongoDB").Get<MongoDbSettings>()
+            var mongoSettings = configuration.GetSection("MongoDb").Get<MongoDbSettings>()
                 ?? throw new InvalidOperationException("MongoDB settings not found");
 
             services.AddSingleton<IMongoClient>(sp =>
