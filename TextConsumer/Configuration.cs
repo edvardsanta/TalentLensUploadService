@@ -51,7 +51,7 @@ namespace TextConsumer
 
         public static void ConfigureAppConfiguration(HostBuilderContext hostContext, IConfigurationBuilder config)
         {
-            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).AddEnvironmentVariables();
         }
 
         public static void ConfigureLogging(HostBuilderContext hostContext, ILoggingBuilder logging)
