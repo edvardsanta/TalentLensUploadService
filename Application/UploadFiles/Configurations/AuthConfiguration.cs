@@ -8,7 +8,7 @@ namespace UploadFiles.Configurations
     {
         public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration config)
         {
-            string? jwtSecret = config.GetRequiredSection("Jwt-Secret").Value;
+            string? jwtSecret = config.GetRequiredSection("JWT_SECRET").Value;
 
             ArgumentException.ThrowIfNullOrEmpty(jwtSecret);
 
