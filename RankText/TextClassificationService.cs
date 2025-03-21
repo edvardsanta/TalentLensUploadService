@@ -1,9 +1,11 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MyML;
 using MyML.Interfaces;
 using RankText.Interfaces;
+using RankText.Models;
 using System.Globalization;
 using UploadFiles.Infrastructure.Persistence.Repositories;
 using UploadFiles.Shared.Enums;
@@ -20,14 +22,16 @@ namespace RankText
         private readonly ILogger<TextClassificationService> _logger;
         private INaiveBayesClassifier _classifier;
         ProcessingStep ProcessingStep = ProcessingStep.SkillScoring;
-
+        readonly CsvSettings _csvSettings;
         public TextClassificationService(
             IFileRepository fileRepository,
-            ILogger<TextClassificationService> logger)
+            ILogger<TextClassificationService> logger,
+            IOptions<CsvSettings> csvSettings)
         {
             _fileRepository = fileRepository;
             _logger = logger;
             _classifier = new MultinomialNaiveBayesClassifier();
+            _csvSettings = csvSettings.Value;
         }
 
         public async Task InitializeClassifierAsync()
@@ -78,13 +82,13 @@ namespace RankText
 
         private async Task<List<ResumeData>> LoadTrainingDataAsync()
         {
-            const string trainingDataPath = "";
+            ArgumentNullException.ThrowIfNullOrEmpty(_csvSettings.TrainingDataPath, nameof(_csvSettings.TrainingDataPath));
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 HasHeaderRecord = true,
             };
 
-            using var reader = new StreamReader(trainingDataPath);
+            using var reader = new StreamReader(_csvSettings.TrainingDataPath);
             using var csv = new CsvReader(reader, config);
 
             var records = new List<ResumeData>();

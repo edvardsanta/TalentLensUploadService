@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RankText.Interfaces;
+using RankText.Models;
 using UploadFiles.Infrastructure.Config;
 
 
@@ -41,7 +42,7 @@ namespace RankText
                     });
                 });
             });
-
+            services.Configure<CsvSettings>(configuration.GetSection("CsvSettings"));
             services.AddInfrastructureServices(configuration);
             services.AddScoped<ITextClassificationService, TextClassificationService>();
         }
